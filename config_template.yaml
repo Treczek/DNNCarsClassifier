@@ -30,7 +30,7 @@ experiment:
   loss_function: cross_entropy
 
 trainer:
-  max_epochs: 5
+  max_epochs: 200
   fast_dev_run: False
   early_stop_callback: True
 
