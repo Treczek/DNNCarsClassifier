@@ -54,10 +54,10 @@ class _BottleNeckBlockV3(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, parameters, num_classes, scaling_parameter=1):
+    def __init__(self, parameters, n_classes, scaling_parameter=1):
         super().__init__()
 
-        self.num_classes = num_classes
+        self.num_classes = n_classes
         self.net_parameters = parameters
         self.mode = "large" if len(self.net_parameters["out_channels"]) > 11 else "small"
         self.net_parameters["out_channels"] = scale_channels(self.net_parameters["out_channels"], scaling_parameter)
@@ -100,7 +100,7 @@ class MobileNetV3(nn.Module):
             nn.Linear(hidden_channels, output_channel),
             HardSwish(),
             nn.Dropout(0.2),
-            nn.Linear(output_channel, num_classes),
+            nn.Linear(output_channel, n_classes),
         )
 
     def forward(self, x):
@@ -110,10 +110,10 @@ class MobileNetV3(nn.Module):
 
 
 class SmallMobileNetV3(MobileNetV3):
-    def __init__(self, num_classes, scaling_parameter=1):
-        super().__init__(mobile3_small, num_classes, scaling_parameter)
+    def __init__(self, n_classes, scaling_parameter=1):
+        super().__init__(mobile3_small, n_classes, scaling_parameter)
 
 
 class LargeMobileNetV3(MobileNetV3):
-    def __init__(self, num_classes, scaling_parameter=1):
-        super().__init__(mobile3_large, num_classes, scaling_parameter)
+    def __init__(self, n_classes, scaling_parameter=1):
+        super().__init__(mobile3_large, n_classes, scaling_parameter)

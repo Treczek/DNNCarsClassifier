@@ -91,7 +91,7 @@ class StanfordCarsDataset(Dataset):
 
     def __getitem__(self, idx):
         image_name = self.image_file_names[idx]
-        img = Image.open(self.zipped_data.open(image_name))
+        img = Image.open(self.zipped_data.open(image_name)).convert('RGB')
         img = self.transformer(img)
 
         mask = self.labels["filename"] == image_name

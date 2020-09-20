@@ -1,6 +1,6 @@
 preprocessing:
   download: True
-  image_size: 224
+  image_size: 227
   random_affine:
     degrees: 25
     translate: !!python/tuple [0.1, 0.1]
@@ -8,18 +8,21 @@ preprocessing:
     shear: 8
 
 model:
-  name: mobilenet1
+  name: mobilenet3_small
   kwargs:
     scaling_parameter: 1
     n_classes: 196
 
 experiment:
   learning_rate: 0.001
-  optimizer: Adam
-  batch_size: 5
+  optimizer: AdamW
+  batch_size: 64
   loss_function: cross_entropy
 
 trainer:
   max_epochs: 5
   fast_dev_run: False
   early_stop_callback: True
+
+neptune:
+  enabled: true

@@ -6,7 +6,7 @@ using given convention: section:subsection:argument
 import yaml
 from pytorch_lightning.callbacks import EarlyStopping
 from torch import nn
-from torch.optim import Adam, SGD
+from torch.optim import Adam, AdamW, SGD
 
 from cars.models.mobile_nets import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
 
@@ -64,7 +64,8 @@ class Config:
 
         optimizer_dict = dict(
             SGD=SGD,
-            Adam=Adam)
+            Adam=Adam,
+            AdamW=AdamW)
 
         loss_dict = dict(
             cross_entropy=nn.CrossEntropyLoss())
