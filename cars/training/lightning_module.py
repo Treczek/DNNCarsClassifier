@@ -85,7 +85,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
         pred_classes = torch.argmax(preds, dim=1)
 
         loss = self.loss(preds, labels)
-        acc = accuracy(pred_classes, labels, num_classes=self.base_model.num_classes)
+        acc = accuracy(pred_classes, labels, num_classes=self.model.num_classes)
 
         result = pl.TrainResult(loss)
         result.log_dict({
@@ -100,7 +100,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
         pred_classes = torch.argmax(preds, dim=1)
 
         loss = self.loss(preds, labels)
-        acc = accuracy(pred_classes, labels, num_classes=self.base_model.num_classes)
+        acc = accuracy(pred_classes, labels, num_classes=self.model.num_classes)
 
         result = pl.EvalResult(checkpoint_on=loss, early_stop_on=loss)
         result.log_dict({
