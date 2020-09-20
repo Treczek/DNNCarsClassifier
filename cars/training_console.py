@@ -55,6 +55,7 @@ class TrainingConsole:
 
         trainer = Trainer(
             checkpoint_callback=checkpoint,
+            gpus=1,
             callbacks=[progress_bar],
             logger=neptune_logger,
             **self.config['trainer']
