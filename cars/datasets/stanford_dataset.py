@@ -11,8 +11,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 from zipfile import ZipFile
 
-from config import get_data_sources
-from utils import convert_tar_to_zip
+from cars.config import get_data_sources
+from cars.utils import convert_tar_to_zip
 
 
 class StanfordCarsDataset(Dataset):
@@ -74,10 +74,11 @@ class StanfordCarsDataset(Dataset):
             self.log.info("Labels downloaded from the source url")
 
         labels = (pd
-                  .read_csv(stream_or_path, usecols=['filename', 'class_name', 'is_test'])
+                  .read_csv(stream_or_path, usecols=['filename', 'class_id', 'is_test'])
                   .query(f'is_test == {(self.mode == "test")}')
                   .drop(columns=["is_test"]))
 
+        labels["class_id"] -= 1  # classes starts from 1 instead of 0
         if self.mode == "test":
             labels["filename"] = labels["filename"].str.replace("test_", "")
 
@@ -93,11 +94,7 @@ class StanfordCarsDataset(Dataset):
         img = Image.open(self.zipped_data.open(image_name))
         img = self.transformer(img)
 
-        mask = self.labels["image_fname"] == image_name
-        label = torch.as_tensor(self.labels[mask]["class_id"] - 1)
+        mask = self.labels["filename"] == image_name
+        label = torch.as_tensor(self.labels[mask]["class_id"].item())
 
         return img, label
-
-
-if __name__ == "__main__":
-    StanfordCarsDataset(mode="test", transformer=None)

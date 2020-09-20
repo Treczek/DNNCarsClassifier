@@ -1,10 +1,10 @@
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, ProgressBar
 
-from config import get_project_structure
+from cars.config import get_project_structure
 
-from training import StanfordCarsLightningModule
-from utils import configure_default_logging, Config
+from cars.training import StanfordCarsLightningModule
+from cars.utils import configure_default_logging, Config
 
 STRUCTURE = get_project_structure()
 seed_everything(42)

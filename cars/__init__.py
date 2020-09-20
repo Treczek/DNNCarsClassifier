@@ -1,2 +1,6 @@
-from training_console import TrainingConsole
-from utils import *
+
+import cars.models
+import cars.training
+import cars.utils
+
+from cars.training_console import TrainingConsole

@@ -1,7 +1,7 @@
 import torch.nn as nn
 
-from utils.mobile_net_utils import parameter_generator_mobilenet2, scale_channels
-from config import mobile2_params
+from cars.utils.mobile_net_utils import parameter_generator_mobilenet2, scale_channels
+from cars.config import mobile2_params
 
 
 class BottleNeckBlockV2(nn.Module):
@@ -71,9 +71,9 @@ class MobileNetV2(nn.Module):
 
         self.n_classes = n_classes
 
-        self.parameters = mobile2_params
-        self.parameters["out_channels"] = scale_channels(self.parameters["out_channels"], scaling_parameter)
-        self.layer_params_generator = parameter_generator_mobilenet2(self.parameters)
+        self.net_parameters = mobile2_params
+        self.net_parameters["out_channels"] = scale_channels(self.net_parameters["out_channels"], scaling_parameter)
+        self.layer_params_generator = parameter_generator_mobilenet2(self.net_parameters)
 
         self.layers = []
 
@@ -97,7 +97,7 @@ class MobileNetV2(nn.Module):
         # Last part of MobileNet2 contains 1x1 convolution that significantly increase number of channels, transform the
         # tensor using average pooling, and then do the prediction using classifier which is also 1x1 convolution.
         self.layers.append(nn.Sequential(
-            nn.Conv2d(in_channels=self.parameters["out_channels"][-1],
+            nn.Conv2d(in_channels=self.net_parameters["out_channels"][-1],
                       out_channels=int(1280 * scaling_parameter),
                       kernel_size=1,
                       stride=1,

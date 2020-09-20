@@ -8,7 +8,7 @@ from pytorch_lightning.callbacks import EarlyStopping
 from torch import nn
 from torch.optim import Adam, SGD
 
-from models import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
+from cars.models.mobile_nets import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
 
 
 class Config:
@@ -67,7 +67,7 @@ class Config:
             Adam=Adam)
 
         loss_dict = dict(
-            cross_entropy=nn.CrossEntropyLoss)
+            cross_entropy=nn.CrossEntropyLoss())
 
         model_dict = dict(
             mobilenet1=MobileNetV1,

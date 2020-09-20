@@ -1,8 +1,8 @@
 import torch.nn as nn
 
-from utils.mobile_net_utils import scale_channels, parameter_generator_mobilenet3
-from models.activation_layers import HardSigmoid, HardSwish
-from config import mobile3_small, mobile3_large
+from cars.utils.mobile_net_utils import scale_channels, parameter_generator_mobilenet3
+from cars.models.activation_layers import HardSigmoid, HardSwish
+from cars.config import mobile3_small, mobile3_large
 
 
 class _SELayer(nn.Module):
@@ -58,9 +58,9 @@ class MobileNetV3(nn.Module):
         super().__init__()
 
         self.num_classes = num_classes
-        self.parameters = parameters
-        self.mode = "large" if len(self.parameters["out_channels"]) > 11 else "small"
-        self.parameters["out_channels"] = scale_channels(self.parameters["out_channels"], scaling_parameter)
+        self.net_parameters = parameters
+        self.mode = "large" if len(self.net_parameters["out_channels"]) > 11 else "small"
+        self.net_parameters["out_channels"] = scale_channels(self.net_parameters["out_channels"], scaling_parameter)
 
         self.layers = []
 
@@ -75,12 +75,12 @@ class MobileNetV3(nn.Module):
         )
 
         # Bottleneck blocks
-        self.bottleneck_params_generator = parameter_generator_mobilenet3(self.parameters, output_channels)
+        self.bottleneck_params_generator = parameter_generator_mobilenet3(self.net_parameters, output_channels)
         self.layers.extend([_BottleNeckBlockV3(**params) for params in self.bottleneck_params_generator])
 
         # Last layers before classification. Before creation we need to get all needed parameters from previous layer
-        in_channels = self.parameters["out_channels"][-1]
-        hidden_channels = int(in_channels * self.parameters["expansion"][-1])
+        in_channels = self.net_parameters["out_channels"][-1]
+        hidden_channels = int(in_channels * self.net_parameters["expansion"][-1])
 
         self.layers.append(
             nn.Sequential(

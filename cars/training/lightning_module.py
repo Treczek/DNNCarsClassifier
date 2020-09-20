@@ -9,7 +9,7 @@ from pytorch_lightning.metrics.functional import accuracy
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from datasets import StanfordCarsDataset
+from cars.datasets import StanfordCarsDataset
 
 
 class StanfordCarsLightningModule(pl.LightningModule):
@@ -30,19 +30,19 @@ class StanfordCarsLightningModule(pl.LightningModule):
 
     @pl.core.decorators.auto_move_data
     def forward(self, input):
-        return self.base_model.forward(input)
+        return self.model.forward(input)
 
     def prepare_data(self):
 
         transform_test = transforms.Compose([
-            transforms.Resize(self.image_size),
-            transforms.Grayscale(),
+            transforms.Resize((self.image_size, self.image_size)),
+            # transforms.Grayscale(),
             transforms.ToTensor()
         ])
 
         transform_train = transforms.Compose([
-            transforms.Resize(self.image_size),
-            transforms.Grayscale(),
+            transforms.Resize((self.image_size, self.image_size)),
+            # transforms.Grayscale(),
             transforms.RandomHorizontalFlip(),
             transforms.RandomAffine(**self.config["preprocessing:random_affine"]),
             transforms.ToTensor(),

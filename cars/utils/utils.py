@@ -7,7 +7,7 @@ import tarfile
 import zipfile
 from datetime import datetime
 
-from config.structure import get_project_structure
+from cars.config.structure import get_project_structure
 
 
 def convert_tar_to_zip(tar_archive_path_or_stream, tar_archive_open_mode, zip_archive_path, delete=True):
