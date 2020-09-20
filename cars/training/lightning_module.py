@@ -28,7 +28,6 @@ class StanfordCarsLightningModule(pl.LightningModule):
 
         self.loss = self.config["experiment:loss_function"]
 
-    @pl.core.decorators.auto_move_data
     def forward(self, input):
         return self.model.forward(input)
 
@@ -47,7 +46,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
             transforms.RandomAffine(**self.config["preprocessing:random_affine"]),
             transforms.ColorJitter(**self.config["preprocessing:color_jitter"]),
             transforms.ToTensor(),
-            transforms.RandomErasing(p=0.5, scale=(0.02, 0.25)),
+            transforms.RandomErasing(**self.config["preprocessing:random_erasing"]),
         ])
 
         self.data_train = StanfordCarsDataset(
