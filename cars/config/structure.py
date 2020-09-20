@@ -4,7 +4,9 @@ from pathlib import Path
 def get_project_structure():
 
     root_dir = Path.cwd()
+    print(root_dir.name)
     if root_dir.name != "DNNCarsClassifier":
+        print("nope")
         root_dir = root_dir / "DNNCarsClassifier"
 
     input_data = root_dir / "cars" / 'input'
