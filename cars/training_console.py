@@ -87,7 +87,7 @@ class TrainingConsole:
                 'loss_function': self.config["experiment:loss_function"].__class__.__name__,
                 # 'loss_params': CFG['loss_params'],
                 'optimizer': self.config["experiment:optimizer"].__name__,
-                'learning_rate': self.config["experiment:learning_rate"],
+                'learning_rate': self.config["experiment:optimizer_kwargs:learning_rate"],
                 # 'weight_decay': OPTIMIZER_PARAMS['weight_decay'] if OPTIMIZER_PARAMS.get(
                 #     'weight_decay') is not None else 0.0,
                 # 'all_optimizer_params': OPTIMIZER_PARAMS,

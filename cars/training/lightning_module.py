@@ -45,6 +45,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
             # transforms.Grayscale(),
             transforms.RandomHorizontalFlip(),
             transforms.RandomAffine(**self.config["preprocessing:random_affine"]),
+            transforms.ColorJitter(**self.config["preprocessing:color_jitter"]),
             transforms.ToTensor(),
             transforms.RandomErasing(p=0.5, scale=(0.02, 0.25)),
         ])
@@ -80,23 +81,38 @@ class StanfordCarsLightningModule(pl.LightningModule):
         return {loss_type: loss, 'log': logs}
 
     def training_step(self, batch_train, batch_idx):
-        return self.step(batch_train, batch_idx, 'loss')
+        input, labels = batch_train
+        preds = self.forward(input)
+        pred_classes = torch.argmax(preds, dim=1)
+
+        loss = self.loss(preds, labels)
+        acc = accuracy(pred_classes, labels, num_classes=self.base_model.num_classes)
+
+        result = pl.TrainResult(loss)
+        result.log_dict({
+            'train_loss': loss,
+            'train_acc': acc
+        }, on_step=False, on_epoch=True)
+        return result
 
     def test_step(self, batch_test, batch_idx):
-        return self.step(batch_test, batch_idx, 'test_loss')
+        input, labels = batch_test
+        preds = self.forward(input)
+        pred_classes = torch.argmax(preds, dim=1)
 
-    def validation_epoch_end(self, outputs):
-        avg_loss = torch.stack([output['val_loss'] for output in outputs]).mean()
-        tensorboard_logs = {'val_loss': avg_loss}
-        return {'avg_val_loss': avg_loss, 'log': tensorboard_logs}
+        loss = self.loss(preds, labels)
+        acc = accuracy(pred_classes, labels, num_classes=self.base_model.num_classes)
 
-    def test_epoch_end(self, outputs):
-        avg_loss = torch.stack([output['test_loss'] for output in outputs]).mean()
-        tensorboard_logs = {'test_loss': avg_loss}
-        return {'avg_test_loss': avg_loss, 'log': tensorboard_logs}
+        result = pl.EvalResult(checkpoint_on=loss, early_stop_on=loss)
+        result.log_dict({
+            'valid_loss': loss,
+            'valid_acc': acc
+        }, on_step=False, on_epoch=True)
+
+        return result
 
     def train_dataloader(self):
-        return DataLoader(self.data_train, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(self.data_train, batch_size=self.batch_size, num_workers=4, shuffle=True)
 
     def test_dataloader(self):
         return DataLoader(self.data_test, batch_size=self.batch_size)
@@ -107,7 +123,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
         optimizer = self.config["experiment:optimizer"]
         self.log.info(f"Optimizer picked: {optimizer.__name__}")
 
-        starting_lr = self.config["experiment:learning_rate"]
+        starting_lr = self.config["experiment:optimizer_kwargs:learning_rate"]
         self.log.info(f"Starting learning rate: {starting_lr}")
 
         return optimizer(self.parameters(), lr=starting_lr)

@@ -6,6 +6,14 @@ preprocessing:
     translate: !!python/tuple [0.1, 0.1]
     scale: !!python/tuple [0.9, 1.1]
     shear: 8
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+  random_erasing:
+    p: 0.5
+    scale: [0.02, 0.25]
 
 model:
   name: mobilenet3_small
@@ -14,8 +22,10 @@ model:
     n_classes: 196
 
 experiment:
-  learning_rate: 0.001
   optimizer: AdamW
+  optimizer_kwargs:
+    learning_rate: 0.001
+    weight_decay: 0.6
   batch_size: 64
   loss_function: cross_entropy
 
