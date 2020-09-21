@@ -103,7 +103,7 @@ class MobileNetV2(nn.Module):
                       stride=1,
                       bias=False),
             nn.AvgPool2d(7, stride=1),
-            nn.Conv2d(int(1280 * scaling_parameter), self.n_classes, kernel_size=1, stride=1, bias=False)))
+            nn.Conv2d(int(1280 * scaling_parameter), self.num_classes, kernel_size=1, stride=1, bias=False)))
 
         self.model = nn.Sequential(*self.layers)
 

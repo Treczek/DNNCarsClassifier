@@ -123,7 +123,7 @@ class MobileNetV1(nn.Module):
         self.model = nn.Sequential(*self.layers)
 
         self.classifier = nn.Linear(
-            self.channel_calculator(as_is=True)["in_channels"], self.n_classes)
+            self.channel_calculator(as_is=True)["in_channels"], self.num_classes)
 
     def forward(self, input):
         x = self.model(input)
