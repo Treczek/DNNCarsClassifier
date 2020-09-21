@@ -50,14 +50,24 @@ class TrainingConsole:
             prefix=''
         )
 
-        progress_bar = ProgressBar(refresh_rate=1)
+        early_stop_patience = 15
+        early_stop_callback = pl.callbacks.early_stopping.EarlyStopping(
+            min_delta=0.0,
+            patience=early_stop_patience,
+            verbose=True,
+            mode='min'
+        )
+
+        lr_monitor = pl.callbacks.LearningRateLogger()
+
         neptune_logger = self._initialize_neptune_connection()
 
         trainer = Trainer(
             checkpoint_callback=checkpoint,
-            gpus=1,
-            callbacks=[progress_bar],
+            early_stop_callback=early_stop_callback,
+            callbacks=[lr_monitor],
             logger=neptune_logger,
+            gpus=1,
             **self.config['trainer']
         )
 
