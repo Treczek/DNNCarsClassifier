@@ -101,7 +101,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
     def train_dataloader(self):
         return DataLoader(self.data_train, batch_size=self.batch_size, shuffle=True)
 
-    def test_dataloader(self):
+    def val_dataloader(self):
         return DataLoader(self.data_test, batch_size=self.batch_size)
 
     def configure_optimizers(self):
