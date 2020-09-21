@@ -67,18 +67,6 @@ class StanfordCarsLightningModule(pl.LightningModule):
 
         self.log.info("Test dataset created.")
 
-    def step(self, batch, batch_idx, loss_type):
-        input, labels = batch
-
-        predictions = self.forward(input)
-        pred_classes = torch.argmax(predictions, dim=1)
-
-        loss = self.loss(predictions, labels)
-        logs = dict(loss_type=loss,
-                    accuracy=accuracy(pred_classes, labels))
-
-        return {loss_type: loss, 'log': logs}
-
     def training_step(self, batch_train, batch_idx):
         input, labels = batch_train
         preds = self.forward(input)

@@ -27,7 +27,7 @@ experiment:
     learning_rate: 0.001
     weight_decay: 0.6
   batch_size: 64
-  loss_function: label_smoothing_cross_entropy
+  loss_function: cross_entropy
 
 trainer:
   max_epochs: 225
