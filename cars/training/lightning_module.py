@@ -98,8 +98,14 @@ class StanfordCarsLightningModule(pl.LightningModule):
 
         return result
 
+    def test_step(self, batch_test, batch_idx):
+        return self.validation_step(batch_test, batch_idx)
+
     def train_dataloader(self):
         return DataLoader(self.data_train, batch_size=self.batch_size, shuffle=True)
+
+    def test_dataloader(self):
+        return DataLoader(self.data_test, batch_size=self.batch_size)
 
     def val_dataloader(self):
         return DataLoader(self.data_test, batch_size=self.batch_size)
