@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pytorch_lightning import Trainer, seed_everything
-from pytorch_lightning.callbacks import ModelCheckpoint, ProgressBar
+from pytorch_lightning.callbacks import ModelCheckpoint, ProgressBar, EarlyStopping, LearningRateLogger
 from pytorch_lightning.loggers import NeptuneLogger
 
 from cars.config import get_project_structure
@@ -51,14 +51,14 @@ class TrainingConsole:
         )
 
         early_stop_patience = 15
-        early_stop_callback = pl.callbacks.early_stopping.EarlyStopping(
+        early_stop_callback = EarlyStopping(
             min_delta=0.0,
             patience=early_stop_patience,
             verbose=True,
             mode='min'
         )
 
-        lr_monitor = pl.callbacks.LearningRateLogger()
+        lr_monitor = LearningRateLogger()
 
         neptune_logger = self._initialize_neptune_connection()
 
