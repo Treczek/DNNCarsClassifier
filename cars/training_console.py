@@ -67,6 +67,7 @@ class TrainingConsole:
         if self.config['neptune:enabled']:
             neptune_parameters = {
                 'architecture': self.lightning_module.model.__class__.__name__,
+                'scaling_parameter': self.config["model:kwargs:scaling_parameter"],
                 'num_params': sum(p.numel() for p in self.lightning_module.model.parameters() if p.requires_grad),
                 'img_size': self.config['preprocessing:image_size'],
                 # 'grayscale': CFG['convert_to_grayscale'],
@@ -89,8 +90,8 @@ class TrainingConsole:
                 # 'loss_params': CFG['loss_params'],
                 'optimizer': self.config["experiment:optimizer"].__name__,
                 'learning_rate': self.config["experiment:optimizer_kwargs:learning_rate"],
-                # 'weight_decay': OPTIMIZER_PARAMS['weight_decay'] if OPTIMIZER_PARAMS.get(
-                #     'weight_decay') is not None else 0.0,
+                'weight_decay': self.config['experiment:weight_decay'] if self.config.get(
+                    'weight_decay') is not None else 0.0,
                 # 'all_optimizer_params': OPTIMIZER_PARAMS,
                 # 'lr_scheduler': LR_SCHEDULER.__name__ if LR_SCHEDULER is not None else None,
                 # 'lr_scheduler_params': LR_SCHEDULER_PARAMS

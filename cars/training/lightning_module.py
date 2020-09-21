@@ -94,7 +94,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
         }, on_step=False, on_epoch=True)
         return result
 
-    def test_step(self, batch_test, batch_idx):
+    def validation_step(self, batch_test, batch_idx):
         input, labels = batch_test
         preds = self.forward(input)
         pred_classes = torch.argmax(preds, dim=1)

@@ -16,7 +16,7 @@ preprocessing:
     scale: [0.02, 0.25]
 
 model:
-  name: mobilenet3_small
+  name: mobilenet2
   kwargs:
     scaling_parameter: 1
     n_classes: 196
@@ -27,10 +27,10 @@ experiment:
     learning_rate: 0.001
     weight_decay: 0.6
   batch_size: 64
-  loss_function: cross_entropy
+  loss_function: label_smoothing_cross_entropy
 
 trainer:
-  max_epochs: 200
+  max_epochs: 225
   fast_dev_run: False
   early_stop_callback: True
 

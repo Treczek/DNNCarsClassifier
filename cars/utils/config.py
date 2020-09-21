@@ -9,6 +9,7 @@ from torch import nn
 from torch.optim import Adam, AdamW, SGD
 
 from cars.models.mobile_nets import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
+from cars.models.custom_loss_functions import LabelSmoothingCrossEntropy
 
 
 class Config:
@@ -44,12 +45,14 @@ class Config:
     def __str__(self):
         return str(self._config)
 
+    def get(self, key, default=None):
+        return self._config.get("key", default)
+
     def _update_trainer_kwargs(self):
         """
         This function will change the configuration parameters into objects accordingly to the attached dictionary
         """
         config_to_arg_dict = dict(
-            foo="foo",
             early_stop_callback=EarlyStopping("val_loss")
         )
 
@@ -68,7 +71,8 @@ class Config:
             AdamW=AdamW)
 
         loss_dict = dict(
-            cross_entropy=nn.CrossEntropyLoss())
+            cross_entropy=nn.CrossEntropyLoss(),
+            label_smoothing_cross_entropy=LabelSmoothingCrossEntropy())
 
         model_dict = dict(
             mobilenet1=MobileNetV1,
