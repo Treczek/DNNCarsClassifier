@@ -68,6 +68,7 @@ class TrainingConsole:
             callbacks=[lr_monitor],
             logger=neptune_logger,
             gpus=1,
+            num_sanity_val_steps=0,
             **self.config['trainer']
         )
 
