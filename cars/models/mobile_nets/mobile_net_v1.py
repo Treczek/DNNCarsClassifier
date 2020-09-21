@@ -93,7 +93,7 @@ class MobileNetV1(nn.Module):
     def __init__(self, n_classes, scaling_parameter=1, parameters=None):
         super().__init__()
 
-        self.n_classes = n_classes
+        self.num_classes = n_classes
 
         # Preparing closure that will held information about number of channels
         self.scaling_parameter = scaling_parameter

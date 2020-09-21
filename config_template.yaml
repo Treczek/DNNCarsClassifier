@@ -32,7 +32,6 @@ experiment:
 trainer:
   max_epochs: 225
   fast_dev_run: False
-  early_stop_callback: True
 
 neptune:
   enabled: true

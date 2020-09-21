@@ -69,7 +69,7 @@ class MobileNetV2(nn.Module):
     def __init__(self, n_classes, scaling_parameter):
         super().__init__()
 
-        self.n_classes = n_classes
+        self.num_classes = n_classes
 
         self.net_parameters = mobile2_params
         self.net_parameters["out_channels"] = scale_channels(self.net_parameters["out_channels"], scaling_parameter)
