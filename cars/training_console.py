@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pytorch_lightning import Trainer, seed_everything
-from pytorch_lightning.callbacks import ModelCheckpoint, ProgressBar, EarlyStopping, LearningRateLogger
+from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateLogger
 from pytorch_lightning.loggers import NeptuneLogger
 
 from cars.config import get_project_structure
@@ -67,7 +67,7 @@ class TrainingConsole:
             early_stop_callback=early_stop_callback,
             callbacks=[lr_monitor],
             logger=neptune_logger,
-            gpus=1,
+            # gpus=1,
             num_sanity_val_steps=0,
             **self.config['trainer']
         )
@@ -81,37 +81,27 @@ class TrainingConsole:
                 'scaling_parameter': self.config["model:kwargs:scaling_parameter"],
                 'num_params': sum(p.numel() for p in self.lightning_module.model.parameters() if p.requires_grad),
                 'img_size': self.config['preprocessing:image_size'],
-                # 'grayscale': CFG['convert_to_grayscale'],
-                # 'normalize': CFG['normalize'],
-                # 'norm_params_rgb': CFG['normalization_params_rgb'] if CFG['normalize'] and not CFG[
-                #     'convert_to_grayscale'] else None,
-                # 'norm_params_gray': CFG['normalization_params_grayscale'] if CFG['normalize'] and CFG[
-                #     'convert_to_grayscale'] else None,
-                # 'crop_to_bboxes': CFG['crop_to_bboxes'],
-                # 'erase_background': CFG['erase_background'],
-                # 'augment_images': CFG['augment_images'],
-                # 'image_augmentations': CFG['image_augmentations'] if CFG['augment_images'] else None,
-                # 'augment_tensors': CFG['augment_tensors'],
-                # 'tensor_augmentations': CFG['tensor_augmentations'] if CFG['augment_tensors'] else None,
                 'batch_size': self.config['experiment:batch_size'],
                 'max_num_epochs': self.config['trainer:max_epochs'],
+                'color_jitter': self.config["preprocessing:color_jitter"],
+                'random_affine': self.config["preprocessing:random_affine"],
+                'random_erasing': self.config["preprocessing:random_erasing"],
                 # 'dropout': CFG['dropout'],
                 # 'out_channels': CFG['out_channels'],
                 'loss_function': self.config["experiment:loss_function"].__class__.__name__,
                 # 'loss_params': CFG['loss_params'],
                 'optimizer': self.config["experiment:optimizer"].__name__,
-                'learning_rate': self.config["experiment:optimizer_kwargs:learning_rate"],
-                'weight_decay': self.config['experiment:weight_decay'] if self.config.get(
-                    'weight_decay') is not None else 0.0,
-                # 'all_optimizer_params': OPTIMIZER_PARAMS,
-                # 'lr_scheduler': LR_SCHEDULER.__name__ if LR_SCHEDULER is not None else None,
-                # 'lr_scheduler_params': LR_SCHEDULER_PARAMS
+                'learning_rate': self.config["experiment:optimizer_kwargs:lr"],
+                'weight_decay': self.config.get('experiment:weight_decay', None),
+                'lr_scheduler': self.config.get("experiment:scheduler", None),
+                'lr_scheduler_params': self.config.get("experiment:scheduler_kwargs", None)
             }
 
             neptune_logger = NeptuneLogger(
                 api_key=os.environ['neptune_api_token'],
                 project_name='treczek/stanford-cars',
-                experiment_name=self.config['model:name'].__class__.__name__ + '_' + datetime.now().strftime('%Y%m%d%H%M%S'),
+                experiment_name=self.config['model:name'].__class__.__name__ + '_' + datetime.now().strftime(
+                                                                                                        '%Y%m%d%H%M%S'),
                 params=neptune_parameters
             )
         else:

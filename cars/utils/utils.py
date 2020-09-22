@@ -27,6 +27,10 @@ def convert_tar_to_zip(tar_archive_path_or_stream, tar_archive_open_mode, zip_ar
 
 
 def configure_default_logging(name):
+
+    if name in logging.Logger.manager.loggerDict:
+        return logging.getLogger(name)
+
     logging_dir = get_project_structure()['logging_dir']
     today = datetime.today().strftime('%Y-%m-%d')
 

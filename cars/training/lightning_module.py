@@ -111,12 +111,22 @@ class StanfordCarsLightningModule(pl.LightningModule):
         return DataLoader(self.data_test, batch_size=self.batch_size)
 
     def configure_optimizers(self):
-        # TODO Scheduler Plateau
 
-        optimizer = self.config["experiment:optimizer"]
-        self.log.info(f"Optimizer picked: {optimizer.__name__}")
+        optimizer = self.config["experiment:optimizer"](self.parameters(), **self.config["experiment:optimizer_kwargs"])
+        self.log.info(f"Optimizer picked: {optimizer.__class__.__name__}")
 
-        starting_lr = self.config["experiment:optimizer_kwargs:learning_rate"]
+        starting_lr = self.config["experiment:optimizer_kwargs:lr"]
         self.log.info(f"Starting learning rate: {starting_lr}")
 
-        return optimizer(self.parameters(), lr=starting_lr)
+        try:
+            scheduler = self.config["experiment:scheduler"]
+            self.log.info(f"Scheduler picked: {scheduler.__name__}")
+            scheduler = dict(
+                scheduler=scheduler(optimizer, **self.config["experiment:scheduler_kwargs"]),
+                monitor='val_checkpoint_on',
+                name='lr'
+            )
+        except KeyError:
+            return [optimizer]
+
+        return [optimizer], [scheduler]

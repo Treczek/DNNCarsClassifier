@@ -7,6 +7,7 @@ import yaml
 from pytorch_lightning.callbacks import EarlyStopping
 from torch import nn
 from torch.optim import Adam, AdamW, SGD
+from torch.optim.lr_scheduler import MultiStepLR, ReduceLROnPlateau
 
 from cars.models.mobile_nets import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
 from cars.models.custom_loss_functions import LabelSmoothingCrossEntropy
@@ -81,9 +82,15 @@ class Config:
             mobilenet3_large=LargeMobileNetV3,
         )
 
+        scheduler_dict = dict(
+            reduce_on_plateu=ReduceLROnPlateau,
+            multi_step=MultiStepLR
+        )
+
         self._config["experiment"]["optimizer"] = optimizer_dict[self._config["experiment"]["optimizer"]]
         self._config["experiment"]["loss_function"] = loss_dict[self._config["experiment"]["loss_function"]]
         self._config["model"]["name"] = model_dict[self._config["model"]["name"]]
+        self._config["experiment"]["scheduler"] = scheduler_dict[self._config["experiment"]["scheduler"]]
 
     def _log_config_in_logger(self):
         """
