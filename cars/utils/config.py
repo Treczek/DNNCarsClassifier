@@ -47,7 +47,11 @@ class Config:
         return str(self._config)
 
     def get(self, key, default=None):
-        return self._config.get("key", default)
+        try:
+            result = self._config[key]
+        except KeyError:
+            result = default
+        return result
 
     def _update_trainer_kwargs(self):
         """
