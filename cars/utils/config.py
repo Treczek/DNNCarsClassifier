@@ -90,7 +90,8 @@ class Config:
         self._config["experiment"]["optimizer"] = optimizer_dict[self._config["experiment"]["optimizer"]]
         self._config["experiment"]["loss_function"] = loss_dict[self._config["experiment"]["loss_function"]]
         self._config["model"]["name"] = model_dict[self._config["model"]["name"]]
-        self._config["experiment"]["scheduler"] = scheduler_dict[self._config["experiment"]["scheduler"]]
+        if self._config.get("experiment").get("scheduler", {}):
+            self._config["experiment"]["scheduler"] = scheduler_dict[self._config["experiment"]["scheduler"]]
 
     def _log_config_in_logger(self):
         """

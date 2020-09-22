@@ -26,12 +26,12 @@ experiment:
   optimizer_kwargs:
     lr: 0.001
     weight_decay: 0.6
-  scheduler: reduce_on_plateu
-  scheduler_kwargs:
-    factor: 0.1
-    patience: 5
-    threshold: 0.001
-    min_lr: 0.0000001
+#  scheduler: reduce_on_plateu
+#  scheduler_kwargs:
+#    factor: 0.1
+#    patience: 5
+#    threshold: 0.001
+#    min_lr: 0.0000001
 #  scheduler: multi_step
 #  scheduler_kwargs:
 #    milestones: [64, 98, 106, 116]
