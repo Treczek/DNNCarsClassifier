@@ -111,3 +111,8 @@ class MobileNetV2(nn.Module):
     def forward(self, input):
         x = self.model(input)
         return x.view(x.size(0), -1)
+
+
+if __name__ == '__main__':
+    model = MobileNetV2(196, 1)
+    print(sum(p.numel() for p in model.parameters() if p.requires_grad))

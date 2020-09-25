@@ -16,22 +16,22 @@ preprocessing:
     scale: [0.02, 0.25]
 
 model:
-  name: mobilenet2
+  name: mobilenet3_small
   kwargs:
     scaling_parameter: 1
     n_classes: 196
 
 experiment:
-  optimizer: AdamW
+  optimizer: Adam
   optimizer_kwargs:
     lr: 0.001
-    weight_decay: 0.6
-#  scheduler: reduce_on_plateu
-#  scheduler_kwargs:
-#    factor: 0.1
-#    patience: 5
-#    threshold: 0.001
-#    min_lr: 0.0000001
+    weight_decay: 0.2
+  scheduler: reduce_on_plateu
+  scheduler_kwargs:
+    factor: 0.1
+    patience: 10
+    threshold: 0.001
+    min_lr: 0.0000001
 #  scheduler: multi_step
 #  scheduler_kwargs:
 #    milestones: [64, 98, 106, 116]
