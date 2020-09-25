@@ -5,8 +5,6 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateLogger
 from pytorch_lightning.loggers import NeptuneLogger
 
-from torchstat import stat
-
 from cars.config import get_project_structure
 from cars.training import StanfordCarsLightningModule
 from cars.utils import configure_default_logging, Config
@@ -96,7 +94,7 @@ class TrainingConsole:
                 'learning_rate': self.config["experiment:optimizer_kwargs:lr"],
                 'weight_decay': self.config['experiment:optimizer_kwargs:weight_decay'],
                 'lr_scheduler': self.config["experiment:scheduler"].__name__,
-                'lr_scheduler_kwargs': self.config['experiment:scheduler_kwargs'].__name__
+                'lr_scheduler_kwargs': self.config['experiment:scheduler_kwargs']
             }
 
             neptune_logger = NeptuneLogger(
