@@ -22,6 +22,7 @@ model:
     n_classes: 196
 
 experiment:
+  early_stop: 30
   optimizer: Adam
   optimizer_kwargs:
     lr: 0.001

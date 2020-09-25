@@ -52,10 +52,9 @@ class TrainingConsole:
             prefix=''
         )
 
-        early_stop_patience = 15
         early_stop_callback = EarlyStopping(
             min_delta=0.0,
-            patience=early_stop_patience,
+            patience=self.config["experiment:early_stop"],
             verbose=True,
             mode='min'
         )
@@ -100,8 +99,6 @@ class TrainingConsole:
                 'lr_scheduler_kwargs': self.config['experiment:scheduler_kwargs'].__name__
             }
 
-            print(neptune_parameters)
-            raise KeyError
             neptune_logger = NeptuneLogger(
                 api_key=os.environ['neptune_api_token'],
                 project_name='treczek/stanford-cars',
