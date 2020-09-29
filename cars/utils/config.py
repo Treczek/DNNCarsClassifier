@@ -97,6 +97,7 @@ class Config:
         if self._config.get("experiment").get("scheduler", {}):
             self._config["experiment"]["scheduler"] = scheduler_dict[self._config["experiment"]["scheduler"]]
 
+
     def _log_config_in_logger(self):
         """
         This function is passing all analysis arguments to the logger in a specially formatted way

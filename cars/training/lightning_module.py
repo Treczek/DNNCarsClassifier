@@ -7,7 +7,16 @@ import torch
 
 from pytorch_lightning.metrics.functional import accuracy
 from torch.utils.data import DataLoader
-from torchvision import transforms
+from torchvision.transforms import (Grayscale,
+                                    ColorJitter,
+                                    RandomAffine,
+                                    RandomErasing,
+                                    RandomHorizontalFlip,
+                                    RandomPerspective,
+                                    ToTensor,
+                                    RandomRotation,
+                                    Resize,
+                                    Compose)
 
 from cars.datasets import StanfordCarsDataset
 
@@ -33,21 +42,30 @@ class StanfordCarsLightningModule(pl.LightningModule):
 
     def prepare_data(self):
 
-        transform_test = transforms.Compose([
-            transforms.Resize((self.image_size, self.image_size)),
-            # transforms.Grayscale(),
-            transforms.ToTensor()
-        ])
+        augmentation_dict = dict(
+            grayscale=Grayscale,
+            random_affine=RandomAffine,
+            color_jitter=ColorJitter,
+            random_erasing=RandomErasing,
+            horizontal_flip=RandomHorizontalFlip,
+            random_perspective=RandomPerspective,
+            random_rotation=RandomRotation
+        )
 
-        transform_train = transforms.Compose([
-            transforms.Resize((self.image_size, self.image_size)),
-            # transforms.Grayscale(),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomAffine(**self.config["preprocessing:random_affine"]),
-            transforms.ColorJitter(**self.config["preprocessing:color_jitter"]),
-            transforms.ToTensor(),
-            transforms.RandomErasing(**self.config["preprocessing:random_erasing"]),
-        ])
+        train_transformations = [Resize((self.image_size, self.image_size))]
+        for augmentation, is_used in self.config["preprocessing:augmentations"]:
+            if is_used:
+                train_transformations.append(
+                  augmentation_dict[augmentation](**self.config[f"preprocessing:augmentations_kwargs:{augmentation}"]))
+        train_transformations.append(ToTensor())
+
+        test_transformations = [Resize((self.image_size, self.image_size))]
+        if self.config["preprocessing:augmentations:grayscale"]:
+            test_transformations.append(Grayscale())
+        test_transformations.append(ToTensor())
+
+        transform_train = Compose(train_transformations)
+        transform_test = Compose(test_transformations)
 
         self.data_train = StanfordCarsDataset(
             mode="train",

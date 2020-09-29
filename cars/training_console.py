@@ -75,6 +75,8 @@ class TrainingConsole:
 
     def _initialize_neptune_connection(self):
 
+        used_augmentations = [augmentation for augmentation, is_used in self.config["preprocessing:augmentations"].items() if is_used]
+
         if self.config['neptune:enabled']:
             neptune_parameters = {
                 'architecture': self.lightning_module.model.__class__.__name__,
@@ -83,9 +85,8 @@ class TrainingConsole:
                 'img_size': self.config['preprocessing:image_size'],
                 'batch_size': self.config['experiment:batch_size'],
                 'max_num_epochs': self.config['trainer:max_epochs'],
-                'color_jitter': self.config["preprocessing:color_jitter"],
-                'random_affine': self.config["preprocessing:random_affine"],
-                'random_erasing': self.config["preprocessing:random_erasing"],
+                'augmentation_used': used_augmentations,
+                'augmentation_kwargs': {aug: self.config["preprocessing:augmentation_kwargs"][aug] for aug in used_augmentations},
                 # 'dropout': CFG['dropout'],
                 # 'out_channels': CFG['out_channels'],
                 'loss_function': self.config["experiment:loss_function"].__class__.__name__,

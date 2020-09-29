@@ -117,11 +117,3 @@ class SmallMobileNetV3(MobileNetV3):
 class LargeMobileNetV3(MobileNetV3):
     def __init__(self, n_classes, scaling_parameter=1):
         super().__init__(mobile3_large, n_classes, scaling_parameter)
-
-
-if __name__ == '__main__':
-    model = SmallMobileNetV3(196, 1)
-    print("small", sum(p.numel() for p in model.parameters() if p.requires_grad))
-
-    model = LargeMobileNetV3(196, 1.25)
-    print("large", sum(p.numel() for p in model.parameters() if p.requires_grad))
