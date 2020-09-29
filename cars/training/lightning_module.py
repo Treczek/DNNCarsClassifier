@@ -56,7 +56,7 @@ class StanfordCarsLightningModule(pl.LightningModule):
         for augmentation, is_used in self.config["preprocessing:augmentations"].items():
             if is_used:
                 train_transformations.append(
-                  augmentation_dict[augmentation](**self.config[f"preprocessing:augmentations_kwargs:{augmentation}"]))
+                  augmentation_dict[augmentation](**self.config[f"preprocessing:augmentation_kwargs:{augmentation}"]))
         train_transformations.append(ToTensor())
 
         test_transformations = [Resize((self.image_size, self.image_size))]
