@@ -49,12 +49,12 @@ class DepthwiseConvBlock(nn.Module):
 
         self.block = \
             nn.Sequential(
-                nn.Conv2d(in_channels, in_channels, 3, stride, 1),
+                nn.Conv2d(in_channels, in_channels, 3, stride, 1, groups=in_channels, bias=False),
                 nn.BatchNorm2d(in_channels),
-                nn.ReLU(),
-                nn.Conv2d(in_channels, out_channels, (1, 1), stride=1, padding=0),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(in_channels, out_channels, (1, 1), stride=1, padding=0, bias=False),
                 nn.BatchNorm2d(out_channels),
-                nn.ReLU()
+                nn.ReLU(inplace=True)
             )
 
     def forward(self, input):
