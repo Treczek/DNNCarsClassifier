@@ -7,6 +7,9 @@ import tarfile
 import zipfile
 from datetime import datetime
 
+import numpy as np
+import torch
+from fvcore.nn.flop_count import flop_count
 
 from cars.config.structure import get_project_structure
 
@@ -54,3 +57,13 @@ def configure_default_logging(name):
     log.addHandler(console_handler)
 
     return log
+
+
+def calculate_model_stats(model, image_size):
+    example_batch_input = torch.rand([1, 3, image_size, image_size]).to(model.device)
+    flop_results = flop_count(model, (example_batch_input,))
+
+    total_params = np.sum([p.numel() for p in model.parameters()]).item()
+    total_flops = sum(flop_results[0].values())
+
+    return total_params, total_flops

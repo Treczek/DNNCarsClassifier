@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
 
-from pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning import Trainer, Callback, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateLogger
 from pytorch_lightning.loggers import NeptuneLogger
 
 from cars.config import get_project_structure
 from cars.training import StanfordCarsLightningModule
-from cars.utils import configure_default_logging, Config
+from cars.utils import configure_default_logging, Config, calculate_model_stats
 
 STRUCTURE = get_project_structure()
 seed_everything(42)
@@ -58,13 +58,14 @@ class TrainingConsole:
         )
 
         lr_monitor = LearningRateLogger()
+        logging_callback = LoggingCallback()
 
         neptune_logger = self._initialize_neptune_connection()
 
         trainer = Trainer(
             checkpoint_callback=checkpoint,
             early_stop_callback=early_stop_callback,
-            callbacks=[lr_monitor],
+            callbacks=[lr_monitor, logging_callback],
             logger=neptune_logger,
             gpus=1,
             num_sanity_val_steps=0,
@@ -81,16 +82,13 @@ class TrainingConsole:
             neptune_parameters = {
                 'architecture': self.lightning_module.model.__class__.__name__,
                 'scaling_parameter': self.config["model:kwargs:scaling_parameter"],
-                'num_params': sum(p.numel() for p in self.lightning_module.model.parameters() if p.requires_grad),
                 'img_size': self.config['preprocessing:image_size'],
                 'batch_size': self.config['experiment:batch_size'],
                 'max_num_epochs': self.config['trainer:max_epochs'],
                 'augmentation_used': used_augmentations,
                 'augmentation_kwargs': {aug: self.config["preprocessing:augmentation_kwargs"][aug] for aug in used_augmentations},
-                # 'dropout': CFG['dropout'],
-                # 'out_channels': CFG['out_channels'],
+                # 'dropout_p': self.config['dropout_p'],
                 'loss_function': self.config["experiment:loss_function"].__class__.__name__,
-                # 'loss_params': CFG['loss_params'],
                 'optimizer': self.config["experiment:optimizer"].__name__,
                 'learning_rate': self.config["experiment:optimizer_kwargs:lr"],
                 'weight_decay': self.config['experiment:optimizer_kwargs:weight_decay'],
@@ -111,6 +109,13 @@ class TrainingConsole:
         return neptune_logger
 
 
-if __name__ == "__main__":
-    console = TrainingConsole(r"config_template.yaml")
-    console.train_model()
+class LoggingCallback(Callback):
+    def __init__(self):
+        self.log = configure_default_logging("cars")
+
+    def on_train_start(self, trainer, pl_module):
+        """Called when the train begins."""
+        if trainer.logger is not None:
+            model_params, model_flops = calculate_model_stats(trainer.model, image_size=trainer.model.image_size)
+            trainer.logger.experiment.log_metric("num_params", model_params)
+            trainer.logger.experiment.log_metric("model_flops", model_flops)
