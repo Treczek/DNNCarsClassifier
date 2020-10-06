@@ -48,7 +48,7 @@ class Config:
 
     def get(self, key, default=None):
         try:
-            result = self._config[key]
+            result = self.__getitem__(key)
         except KeyError:
             result = default
         return result

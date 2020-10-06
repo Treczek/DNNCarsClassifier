@@ -78,6 +78,8 @@ class TrainingConsole:
 
         used_augmentations = [augmentation for augmentation, is_used in self.config["preprocessing:augmentations"].items() if is_used]
 
+        scheduler = self.config.get("experiment:scheduler", False)
+
         if self.config['neptune:enabled']:
             neptune_parameters = {
                 'architecture': self.lightning_module.model.__class__.__name__,
@@ -91,9 +93,9 @@ class TrainingConsole:
                 'loss_function': self.config["experiment:loss_function"].__class__.__name__,
                 'optimizer': self.config["experiment:optimizer"].__name__,
                 'learning_rate': self.config["experiment:optimizer_kwargs:lr"],
-                'weight_decay': self.config['experiment:optimizer_kwargs:weight_decay'],
-                'lr_scheduler': self.config["experiment:scheduler"].__name__,
-                'lr_scheduler_kwargs': self.config['experiment:scheduler_kwargs']
+                'weight_decay': self.config.get('experiment:optimizer_kwargs:weight_decay', None),
+                'lr_scheduler':scheduler.__name__ if scheduler else None,
+                'lr_scheduler_kwargs': self.config['experiment:scheduler_kwargs'] if scheduler else None
             }
 
             neptune_logger = NeptuneLogger(
