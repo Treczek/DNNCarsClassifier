@@ -7,7 +7,7 @@ import yaml
 from pytorch_lightning.callbacks import EarlyStopping
 from torch import nn
 from torch.optim import Adam, AdamW, SGD
-from torch.optim.lr_scheduler import MultiStepLR, ReduceLROnPlateau
+from torch.optim.lr_scheduler import MultiStepLR, ReduceLROnPlateau, CosineAnnealingLR
 
 from cars.models.mobile_nets import MobileNetV1, MobileNetV2, SmallMobileNetV3, LargeMobileNetV3
 from cars.models.custom_loss_functions import LabelSmoothingCrossEntropy
@@ -88,7 +88,8 @@ class Config:
 
         scheduler_dict = dict(
             reduce_on_plateu=ReduceLROnPlateau,
-            multi_step=MultiStepLR
+            multi_step=MultiStepLR,
+            annealing=CosineAnnealingLR
         )
 
         self._config["experiment"]["optimizer"] = optimizer_dict[self._config["experiment"]["optimizer"]]
